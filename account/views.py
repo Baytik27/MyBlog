@@ -35,8 +35,6 @@ class ActivateView(APIView):
         return Response('Your account successfully activated', status=status.HTTP_200_OK)
 
 
-# что то новое, здесь может произойти ошибка
-
 class ForgotPasswordView(APIView):
     def get(self, request):
         email = request.query_params.get('email')
