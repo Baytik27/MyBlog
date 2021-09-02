@@ -1,4 +1,4 @@
-# TODO: register serializer
+# сериализируем данные чтобы клиент понимал
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -63,7 +63,7 @@ class loginSerializer(serializers.Serializer):
 
 class CreateNewPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    activation_code = serializers.CharField(max_length=25,
+    activation_code = serializers.CharField(max_length=50,
                                             required=True)
     password = serializers.CharField(min_length=8,
                                      required=True)
@@ -77,7 +77,7 @@ class CreateNewPasswordSerializer(serializers.Serializer):
 
     def validate_activation_code(self, act_code):
         if not MyUser.objects.filter(activation_code=act_code,
-                                         is_active=False).exists():
+                                     is_active=False).exists():
             raise serializers.ValidationError('Неверный код активации')
         return act_code
 

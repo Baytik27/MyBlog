@@ -31,9 +31,3 @@ def send_activation_code(email, activation_code, status=None):
             [email, ],
             fail_silently=False
         )
-
-
-
-
-
-

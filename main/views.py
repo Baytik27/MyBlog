@@ -31,13 +31,13 @@ class MyPaginationClass(PageNumberPagination):
         return super().get_paginated_response(data)
 
 
-class CategoryListView(generics.ListAPIView):
-    queryset = Category.objects.all()
+class CategoryListView(generics.ListAPIView):    #
+    queryset = Category.objects.all()   # какие объекты мы берем
     serializer_class = CategorySerializer
     permission_classes = [AllowAny, ]
 
 
-class PostsListView(viewsets.ModelViewSet):
+class PostsListView(viewsets.ModelViewSet):    # CRUD создаем класс для поста и переопределяем класс ModelViewSet
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated, ]
@@ -132,6 +132,7 @@ class RatingViewSet(ModelViewSet):
         context['action'] = self.action
         return context
 
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -192,18 +193,3 @@ class FavoritesViewSet(ListModelMixin,
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

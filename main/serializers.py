@@ -4,23 +4,32 @@ from main.models import *
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = '__all__'
+    class Meta:  # чтобы вытягивать данные или поляя
+        model = Category  # из какой моделки надо  вытягивать данные или поляя
+        fields = '__all__'  # какие поля надо вытягивать
 
 
 class PostSerializer(serializers.ModelSerializer):
-    created_at = serializers.DateTimeField(format='%d/%m/%Y %H:%M:%S', read_only=True)
+    created_at = serializers.DateTimeField(format='%d/%m/%Y %H:%M:%S', read_only=True)  # переопределяем поле
+                                            # в каком формате передать дату : день, месяц, год час, минуты, секунды
 
     class Meta:
         model = Post
         fields = ('id', 'title', 'category', 'created_at', 'text')
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)  # super для того чтобы от родителя переопределить метод
+    def to_representation(self, instance):  # создаем дополнительное поле ,преопределяем метод  <--
+        representation = super().to_representation(instance)  # super для того чтобы от родителя переопределить метод,
+                                                    # intance -объект поста
         representation['author'] = instance.author.email
         representation['images'] = PostImageSerializer(instance.images.all(),
-                                                       many=True, context=self.context).data
+                                                       many=True, context=self.context).data   # здесь хранятся отформатированные данные
+                            # many=True может быть много катинков
+        representation['comments'] = PostImageSerializer(instance.comments.all(),
+                                                         many=True, context=self.context).data
+        representation['ratings'] = PostImageSerializer(instance.ratings.all(),
+                                                        many=True, context=self.context).data
+        representation['likes'] = PostImageSerializer(instance.likes.all(),
+                                                      many=True, context=self.context).data
         return representation
 
     def create(self, validated_data):
@@ -36,7 +45,7 @@ class PostImageSerializer(serializers.ModelSerializer):
         model = PostImage
         fields = '__all__'
 
-    def _get_image_url(self, obj,):
+    def _get_image_url(self, obj, ):
         if obj.image:  # image из модельки PostImage
             url = obj.image.url
             request = self.context.get('request')
@@ -48,7 +57,7 @@ class PostImageSerializer(serializers.ModelSerializer):
 
         def to_representation(self, instance):
             representation = super().to_representation(
-                instance)  # super для того чтобы от родителя переопределить метод
+                instance)  # super для того чтобы от родителя наследо+вать метод
             representation['images'] = self._get_image_url(instance)
             return representation
 
@@ -100,7 +109,8 @@ class CommentSerializer(serializers.ModelSerializer):
         print(action)
         if action == 'list':
             representation['post'] = instance.post.title
-            representation['comment'] = instance.comment[:30] + '...' if len(instance.comment) >=30 else instance.comment
+            representation['comment'] = instance.comment[:30] + '...' if len(
+                instance.comment) >= 30 else instance.comment
 
         elif action == 'retrieve':
             representation['post'] = PostSerializer(instance.post).data
